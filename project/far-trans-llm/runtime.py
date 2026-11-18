@@ -22,7 +22,8 @@ class LocalGenerator:
         if revision:
             kwargs['revision'] = revision
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
-        dtype = torch.bfloat16 if self.device == 'cuda' else torch.float32
+        # HW2 change: half precision on Apple MPS too (float32 1.7B model swapped on a 16 GB laptop).
+        dtype = torch.bfloat16 if self.device in ('cuda', 'mps') else torch.float32
         self.model = AutoModelForCausalLM.from_pretrained(model, torch_dtype=dtype, **kwargs)
         self.model.to(self.device).eval()
         import transformers
