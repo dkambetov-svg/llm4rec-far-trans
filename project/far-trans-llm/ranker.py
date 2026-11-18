@@ -79,6 +79,17 @@ def build_prompt(context, assets, history, events, history_events=15, shuffle_se
         + json.dumps(payload, ensure_ascii=False, sort_keys=True))
 
 
+def build_retry_prompt(prompt, raw, error):
+    """HW2 change: one error-specific correction request after an invalid answer."""
+    previous = raw if type(raw) is str else ''
+    return (prompt + '\n\nYour previous answer was rejected by an automatic validator.\n'
+            f'Validator error: {error}\n'
+            f'Your previous answer: {previous[:1500]}\n'
+            'Answer again. Return ONLY a JSON array of exactly ten unique ISIN strings, '
+            'each copied exactly from candidate_assets, in descending relevance order. '
+            'No duplicates, no other IDs, no explanations.')
+
+
 def parse_ranking(raw, allowed):
     """Return IDs and whether non-native JSON extraction was needed; never regenerate."""
     if type(raw) is not str:
@@ -141,6 +152,8 @@ def run(args, bundle, generator=None):
     predictions, failures = {}, []
     current_records = []
     invalid_count = repair_count = 0
+    retry_limit = getattr(args, 'retry_invalid', 0)
+    retry_attempts = retry_recovered = 0
     for uid, prompt in prompts:
         ids = candidate_ids(contexts[uid])
         record = {'user_id': uid, 'raw_response': None, 'parse_repaired': False,
@@ -157,6 +170,20 @@ def run(args, bundle, generator=None):
             record['error'] = f'{type(exc).__name__}: {exc}'
             record['fallback'] = args.on_invalid == 'fallback'
             failures.append(dict(record))
+            if retry_limit and args.on_invalid == 'fallback':
+                retry_attempts += 1
+                retry_prompt = build_retry_prompt(prompt, record['raw_response'], record['error'])
+                record.update(retried=True, retry_raw_response=None, retry_error=None,
+                              retry_recovered=False)
+                try:
+                    retry = generator.generate(retry_prompt, max_new_tokens=512)
+                    record['retry_raw_response'] = retry['text']
+                    retry_ranking, _ = parse_ranking(retry['text'], set(ids))
+                    starter.validate_ranking(retry_ranking, ids)
+                    record['retry_recovered'] = True
+                    retry_recovered += 1
+                except (ValueError, TypeError, KeyError, RuntimeError) as retry_exc:
+                    record['retry_error'] = f'{type(retry_exc).__name__}: {retry_exc}'
             if args.on_invalid == 'error':
                 record.update(raw_invalid_count=invalid_count, parse_repair_count=repair_count)
                 append_record(args.output_dir / 'ranker_responses.jsonl', record)
@@ -166,6 +193,10 @@ def run(args, bundle, generator=None):
         append_record(args.output_dir / 'ranker_responses.jsonl', record)
         current_records.append(record)
         predictions[uid] = {'llmrank': ranking, 'candidate_order_first10': ids[:10]}
+        if retry_limit:
+            # Same first attempt as llmrank; only invalid users can differ.
+            predictions[uid]['llmrank_retry'] = (retry_ranking if record.get('retry_recovered')
+                                                 else ranking)
     # The history remains append-only across resumed passes. Publish only this
     # completed pass, already in manifest order, as the canonical response artifact.
     with (args.output_dir / 'final_responses.jsonl').open('w', encoding='utf-8') as stream:
@@ -174,6 +205,9 @@ def run(args, bundle, generator=None):
     metadata = dict(generator.metadata, raw_invalid_count=invalid_count,
                     parse_repair_count=repair_count, shuffle_seed=args.shuffle_seed,
                     history_events=args.history_events, adaptation='sequential_recency_only',
+                    retry_invalid=retry_limit, retry_attempts=retry_attempts,
+                    retry_recovered=retry_recovered,
+                    final_invalid_after_retry=invalid_count - retry_recovered,
                     response_log='final_responses.jsonl',
                     history_log='ranker_responses.jsonl')
     data_adapter.save_results(args, bundle, predictions, failures, 'llmrank', metadata)
@@ -184,6 +218,8 @@ def main(argv=None):
     parser = data_adapter.arguments('LLMRank sequential/recency fixed-candidate adaptation')
     parser.add_argument('--shuffle-seed', type=int, help='Shuffle presentation only, not candidate membership')
     parser.add_argument('--history-events', type=int, default=15)
+    parser.add_argument('--retry-invalid', type=int, choices=[0, 1], default=0,
+                        help='HW2 change: one correction retry for invalid outputs (fallback mode)')
     parser.add_argument('--prepare-only', action='store_true', help='Write prompts only; no inference or measured results')
     args = parser.parse_args(argv)
     run(args, data_adapter.load(args))

@@ -20,7 +20,7 @@ def arguments(description):
     parser.add_argument('--candidate-count', type=int, default=50)
     parser.add_argument('--model', required=True, help='Local model directory or cached HF model ID')
     parser.add_argument('--revision', help='Pinned Hugging Face revision; use with a model ID')
-    parser.add_argument('--device', choices=['auto', 'cpu', 'cuda'], default='auto')
+    parser.add_argument('--device', choices=['auto', 'cpu', 'cuda', 'mps'], default='auto')
     parser.add_argument('--allow-download', action='store_true')
     parser.add_argument('--on-invalid', choices=['error', 'fallback'], default='error')
     return parser
