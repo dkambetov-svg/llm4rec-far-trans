@@ -239,6 +239,7 @@ class ExecutionTests(unittest.TestCase):
         self.assertIn('--history-events', result.stdout)
         self.assertIn('--history-format', result.stdout)
         self.assertIn('--short-window-days', result.stdout)
+        self.assertIn('--dtype', result.stdout)
 
     MAIN_ARGV = ['--data-dir', 'unused', '--output-dir', 'unused', '--model', 'unused']
 
@@ -272,6 +273,33 @@ class ExecutionTests(unittest.TestCase):
             metadata = ranker.run(args, self.bundle(), FakeGenerator(json.dumps(IDS[:10])))
         self.assertEqual(metadata['python_hash_seed'], '0')
         self.assertEqual(save.call_args.args[5]['python_hash_seed'], '0')
+
+    def test_dtype_flag_reaches_runtime_and_manifest_metadata(self):
+        import runtime
+        for dtype in (None, 'auto', 'float16', 'bfloat16'):
+            with self.subTest(dtype=dtype), tempfile.TemporaryDirectory() as directory, \
+                    patch.object(runtime, 'LocalGenerator') as local, \
+                    patch.object(runtime, 'LoggedGenerator',
+                                 return_value=FakeGenerator(json.dumps(IDS[:10]))), \
+                    patch.object(ranker.data_adapter, 'save_results') as save:
+                args = self.args(directory)
+                if dtype is not None:
+                    args.dtype = dtype
+                args.model, args.revision, args.device, args.allow_download = 'm', 'r', 'cuda', False
+                ranker.run(args, self.bundle())
+                expected = dtype or 'auto'
+                self.assertEqual(local.call_args.kwargs['dtype'], expected)
+                self.assertEqual(save.call_args.args[5]['requested_dtype'], expected)
+
+    def test_dtype_cli_choices(self):
+        with patch.dict(os.environ, {'PYTHONHASHSEED': '0'}), \
+                patch.object(ranker.data_adapter, 'load'), patch.object(ranker, 'run') as run:
+            ranker.main(self.MAIN_ARGV)
+            self.assertEqual(run.call_args.args[0].dtype, 'auto')
+            ranker.main(self.MAIN_ARGV + ['--dtype', 'float16'])
+            self.assertEqual(run.call_args.args[0].dtype, 'float16')
+            with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):
+                ranker.main(self.MAIN_ARGV + ['--dtype', 'float32'])
 
 
 # Mixed-format fixtures and SHA256 of prompts produced by ranker.py at commit

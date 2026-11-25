@@ -248,7 +248,9 @@ def run(args, bundle, generator=None):
     if generator is None:
         from runtime import LocalGenerator, LoggedGenerator
         generator = LoggedGenerator(LocalGenerator(args.model, args.revision, args.device,
-                                                   args.allow_download), args.output_dir)
+                                                   args.allow_download,
+                                                   dtype=getattr(args, 'dtype', 'auto')),
+                                    args.output_dir)
     predictions, failures = {}, []
     current_records = []
     invalid_count = repair_count = 0
@@ -286,6 +288,8 @@ def run(args, bundle, generator=None):
                     parse_repair_count=repair_count, shuffle_seed=args.shuffle_seed,
                     history_events=args.history_events, adaptation='sequential_recency_only',
                     python_hash_seed=getattr(args, 'python_hash_seed', None),
+                    # requested flag; the backend's 'dtype' key is the resolved torch dtype
+                    requested_dtype=getattr(args, 'dtype', 'auto'),
                     response_log='final_responses.jsonl',
                     history_log='ranker_responses.jsonl')
     if split:
@@ -311,6 +315,10 @@ def main(argv=None):
     parser.add_argument('--short-window-days', type=int, default=90,
                         help='Split window mode only: days before the cutoff in short_term_interest')
     parser.add_argument('--prepare-only', action='store_true', help='Write prompts only; no inference or measured results')
+    from runtime import DTYPES  # stdlib-only module import; torch loads only for inference
+    parser.add_argument('--dtype', choices=DTYPES, default='auto',
+                        help='Model weights dtype. auto: bfloat16 on CUDA, float32 on CPU (original '
+                             'behaviour); float16 for GPUs without bfloat16 (e.g. T4)')
     args = parser.parse_args(argv)
     # The starter's CBF candidate order depends on Python string hashing (set iteration
     # order changes float summation), so an unfixed seed can change candidates per process.

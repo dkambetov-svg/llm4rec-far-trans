@@ -23,6 +23,7 @@ export REPO_SRC=/kaggle/input/<repo-dataset>/RecSys-LLMs     # uploaded repo che
 export DATA_DIR=/kaggle/input/<far-trans-dataset>/FAR-Trans  # transactions.csv, asset_information.csv, ...
 export PKG=/kaggle/working/RecSys-LLMs/project/far-trans-llm
 export PYTHONHASHSEED=0   # required: ranker.py refuses to run without a fixed seed
+export DTYPE=auto         # auto = bfloat16 on CUDA; set float16 only if bf16 fails (see step 6)
 EOF
 cat /kaggle/working/hw8_env.sh
 ```
@@ -111,6 +112,11 @@ run, same seed), but record it as a deviation.
 
 ## 6. Inference: mixed → `outputs/hw8_mixed`
 
+**dtype:** try `--dtype auto` (bfloat16) first; switch `DTYPE=float16` in step 1 for BOTH mixed and split only if bf16 fails, rerun both into fresh output dirs, and record which dtype was used (`run_manifest.json` → `runtime.requested_dtype` and `runtime.dtype`).
+A bf16 failure may not crash the run: errors during generation are caught by
+`--on-invalid fallback` and show up as invalid outputs. Check `failures` in
+`run_manifest.json` for `RuntimeError` messages before trusting a completed run.
+
 ```bash
 %%bash
 set -euo pipefail
@@ -123,6 +129,7 @@ python ranker.py \
   --model Qwen/Qwen3-1.7B \
   --revision 70d244cc86ccca08cf5af4e1e306ecf908b1ad5e \
   --allow-download --device cuda --on-invalid fallback \
+  --dtype "$DTYPE" \
   --history-format mixed
 ```
 
@@ -140,6 +147,7 @@ python ranker.py \
   --model Qwen/Qwen3-1.7B \
   --revision 70d244cc86ccca08cf5af4e1e306ecf908b1ad5e \
   --allow-download --device cuda --on-invalid fallback \
+  --dtype "$DTYPE" \
   --history-format split --short-term-mode last_k
 ```
 
@@ -165,7 +173,8 @@ for run in ('hw8_mixed', 'hw8_split'):
     print('  raw_invalid_count', rt['raw_invalid_count'], '| parse_repair_count', rt['parse_repair_count'],
           '| failures listed', len(r['failures']), '| python_hash_seed', rt.get('python_hash_seed'))
     print('  torch', rt.get('torch_version'), '| transformers', rt.get('transformers_version'),
-          '| dtype', rt.get('dtype'), '| resolved_revision', rt.get('resolved_revision'))
+          '| requested_dtype', rt.get('requested_dtype'), '| dtype', rt.get('dtype'),
+          '| resolved_revision', rt.get('resolved_revision'))
     print('  data_sha256', r['data_sha256'])
 EOF
 cd outputs && tar czf /kaggle/working/hw8_outputs.tgz hw8_prep_checks hw8_mixed hw8_split
@@ -181,11 +190,17 @@ includes the fallbacks.
 
 ## Known risks (not verified)
 
-- **bfloat16 on T4.** `runtime.py:25` loads the model in `torch.bfloat16` on CUDA.
-  The T4 (compute capability 7.5) has no native bf16 support. Whether this works and
-  how fast it runs with the pinned torch on Kaggle is unverified. HW2 used an RTX 5070 Ti,
-  so generations, and therefore invalid counts and nDCG, may differ from HW2 even for
-  the mixed prompt. Step 3 prints what torch reports; record it.
+- **bfloat16 on T4 (precaution, not an observed failure).** The default `--dtype auto`
+  loads bfloat16 on CUDA (`runtime.py`). The T4 (compute capability 7.5) has no native
+  bf16 support; whether bf16 works and how fast it runs there with the pinned torch is
+  unverified. `--dtype float16` exists only as a fallback: use it for BOTH runs or for
+  neither, so mixed and split stay comparable. HW2 used bfloat16 on an RTX 5070 Ti, and
+  the T4 and any float16 fallback may change generations, so compare HW8 mixed with
+  HW8 split, not with the HW2 LLMRank number. Whether float16 causes numerical problems
+  (e.g. empty or garbled output) with this model is also unverified; check `failures`
+  and a few `raw_response` values in `final_responses.jsonl`. `run_manifest.json`
+  records `runtime.requested_dtype` (the flag) and `runtime.dtype` (the torch dtype
+  actually loaded).
 - **torch 2.11.0 wheel.** The default PyPI wheel's CUDA build must support both the T4
   and Kaggle's driver. This was not checked; the local measurement was `2.11.0+cu128`.
 - **Context budget.** Prompts are 12,628–19,045 characters locally (no tokenizer was

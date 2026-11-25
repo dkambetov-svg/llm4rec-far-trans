@@ -7,8 +7,15 @@ import time
 from pathlib import Path
 
 
+DTYPES = ('auto', 'bfloat16', 'float16')
+
+
 class LocalGenerator:
-    def __init__(self, model, revision=None, device='auto', allow_download=False):
+    def __init__(self, model, revision=None, device='auto', allow_download=False, dtype='auto'):
+        # auto keeps the original choice: bfloat16 on CUDA, float32 on CPU.
+        # Explicit float16 exists for GPUs without bfloat16 support (e.g. T4).
+        if dtype not in DTYPES:
+            raise ValueError(f'dtype must be one of {DTYPES}')
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
         torch.set_num_threads(4)
@@ -22,7 +29,10 @@ class LocalGenerator:
         if revision:
             kwargs['revision'] = revision
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
-        dtype = torch.bfloat16 if self.device == 'cuda' else torch.float32
+        if dtype == 'auto':
+            dtype = torch.bfloat16 if self.device == 'cuda' else torch.float32
+        else:
+            dtype = getattr(torch, dtype)
         self.model = AutoModelForCausalLM.from_pretrained(model, torch_dtype=dtype, **kwargs)
         self.model.to(self.device).eval()
         import transformers
