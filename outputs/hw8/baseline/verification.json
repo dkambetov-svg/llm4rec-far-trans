@@ -1,0 +1,65 @@
+{
+  "protocol_hash": "50efd4aeb415ba6f0c66dd0793a7c2033cdc32a42b86b58eebbca3e81eaf3417",
+  "cutoff": "2021-06-01",
+  "end_exclusive": "2021-07-01",
+  "checks": {
+    "exactly_100_users": true,
+    "official_cutoff": true,
+    "official_30_day_window": true,
+    "k_is_10": true,
+    "candidate_count_50": true,
+    "repeat_purchases_allowed": true,
+    "metrics_protocol_hash_matches": true,
+    "source_sha256_match_dataset": true,
+    "four_official_methods_present": true,
+    "every_method_has_100_users": true,
+    "every_method_has_11_nonempty_89_empty": true,
+    "both_ndcg_means_reported": true,
+    "context_users_match_protocol": true,
+    "no_truth_or_relevant_field_in_contexts": true,
+    "no_post_cutoff_metadata_in_contexts": true,
+    "candidate_ids_subset_of_eligible": true,
+    "history_ids_subset_of_eligible": true,
+    "exactly_400_method_user_groups": true,
+    "ten_unique_ranked_ids_per_user_method": true,
+    "all_recommended_ids_eligible": true,
+    "identical_user_set_across_methods": true
+  },
+  "all_checks_passed": true,
+  "reference_comparison": {
+    "cbf": {
+      "measured_all_4dp": "0.0201",
+      "reference_all_4dp": "0.0201",
+      "match_all": true,
+      "measured_nonempty_4dp": "0.1827",
+      "reference_nonempty_4dp": "0.1827",
+      "match_nonempty": true
+    },
+    "latest_buy": {
+      "measured_all_4dp": "0.0277",
+      "reference_all_4dp": "0.0277",
+      "match_all": true,
+      "measured_nonempty_4dp": "0.2520",
+      "reference_nonempty_4dp": "0.2520",
+      "match_nonempty": true
+    },
+    "latest_buy_or_sell": {
+      "measured_all_4dp": "0.0271",
+      "reference_all_4dp": "0.0271",
+      "match_all": true,
+      "measured_nonempty_4dp": "0.2464",
+      "reference_nonempty_4dp": "0.2464",
+      "match_nonempty": true
+    },
+    "popularity": {
+      "measured_all_4dp": "0.0286",
+      "reference_all_4dp": "0.0286",
+      "match_all": true,
+      "measured_nonempty_4dp": "0.2599",
+      "reference_nonempty_4dp": "0.2599",
+      "match_nonempty": true
+    }
+  },
+  "discrepancies": [],
+  "reference_note": "Reference values are 4-decimal published figures from HW2_RESULTS.md; measured full-precision values are in metrics.json."
+}

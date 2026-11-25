@@ -1,0 +1,15 @@
+{
+  "users": 3,
+  "done": 3,
+  "wall_seconds": 31.81,
+  "rate_per_min": 5.66,
+  "new_calls": 3,
+  "cache_hits": 0,
+  "raw_invalid_count": 1,
+  "parse_repair_count": 0,
+  "final_invalid_after_retry": 1,
+  "input_tokens": 15984,
+  "output_tokens": 422,
+  "llmrank_ndcg_at_10": 0.0,
+  "output_dir": "/Users/davidkk/llm4rec-hw2/RecSys-LLMs/outputs/hw8/fast_bench/split"
+}

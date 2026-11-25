@@ -1,0 +1,34 @@
+test_adapter_excludes_future_metadata (test_encoder.EncoderTests) ... ok
+test_all_five_ledger_vectors (test_encoder.EncoderTests) ... ok
+test_count_validation (test_encoder.EncoderTests) ... ok
+test_generation_once_per_asset_and_invalid (test_encoder.EncoderTests) ... ok
+test_namespaces_and_missing_view (test_encoder.EncoderTests) ... ok
+test_nontrivial_df_and_raw_counts (test_encoder.EncoderTests) ... ok
+test_safe_canonical_source (test_encoder.EncoderTests) ... ok
+test_user_coverage_cold_ties_same_full_universe (test_encoder.EncoderTests) ... ok
+test_fake_success_coverage_baselines_no_mutation (test_ranker.ExecutionTests) ... ok
+test_fallback_retains_all_users_original_order (test_ranker.ExecutionTests) ... ok
+test_help_without_torch_import (test_ranker.ExecutionTests) ... ok
+test_invalid_errors_once_and_logs (test_ranker.ExecutionTests) ... ok
+test_prepare_only_no_generator_or_measured_results (test_ranker.ExecutionTests) ... ok
+test_repaired_outputs_reported (test_ranker.ExecutionTests) ... ok
+test_array_extraction_repair (test_ranker.ParsingTests) ... ok
+test_fence_repair (test_ranker.ParsingTests) ... ok
+test_invalid_outputs (test_ranker.ParsingTests) ... ok
+test_native (test_ranker.ParsingTests) ... ok
+test_candidates_require_unique_strings_eligible (test_ranker.PromptTests) ... ok
+test_chronology_and_most_recent (test_ranker.PromptTests) ... ok
+test_future_and_sell_excluded (test_ranker.PromptTests) ... ok
+test_future_metadata_profile_hidden (test_ranker.PromptTests) ... ok
+test_invalid_history_limit (test_ranker.PromptTests) ... ok
+test_prompt_only_selected_facts_and_original_string_ids (test_ranker.PromptTests) ... ok
+test_recent_15_retains_repeated_events (test_ranker.PromptTests) ... ok
+test_shuffle_membership_and_determinism (test_ranker.PromptTests) ... ok
+test_failed_retry_falls_back_to_candidate_order (test_retry.RetryTests) ... ok
+test_no_retry_keeps_original_behaviour (test_retry.RetryTests) ... ok
+test_retry_recovers_invalid_first_answer (test_retry.RetryTests) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 0.089s
+
+OK

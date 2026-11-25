@@ -1,0 +1,69 @@
+{"arm": "unified", "batch_done": 96, "total": 100, "batch_wall_seconds": 38.38, "cumulative_wall_seconds": 38.83, "rate_per_min": 148.33, "llmrank_ndcg": 0.020937512225081847}
+{"arm": "unified", "batch_done": 99, "total": 100, "batch_wall_seconds": 28.29, "cumulative_wall_seconds": 67.14, "rate_per_min": 88.47, "llmrank_ndcg": 0.020303042157655125}
+{"arm": "unified", "batch_done": 100, "total": 100, "batch_wall_seconds": 9.66, "cumulative_wall_seconds": 76.83, "rate_per_min": 78.09, "llmrank_ndcg": 0.020100011736078574}
+{"arm": "split", "batch_done": 3, "total": 100, "batch_wall_seconds": 31.09, "cumulative_wall_seconds": 31.1, "rate_per_min": 5.79, "llmrank_ndcg": 0.0}
+{"arm": "split", "batch_done": 6, "total": 100, "batch_wall_seconds": 26.34, "cumulative_wall_seconds": 57.46, "rate_per_min": 6.26, "llmrank_ndcg": 0.0}
+{"arm": "split", "batch_done": 9, "total": 100, "batch_wall_seconds": 28.88, "cumulative_wall_seconds": 86.37, "rate_per_min": 6.25, "llmrank_ndcg": 0.0}
+{"arm": "split", "batch_done": 12, "total": 100, "batch_wall_seconds": 27.2, "cumulative_wall_seconds": 113.61, "rate_per_min": 6.34, "llmrank_ndcg": 0.0}
+{"arm": "split", "batch_done": 15, "total": 100, "batch_wall_seconds": 35.35, "cumulative_wall_seconds": 149.07, "rate_per_min": 6.04, "llmrank_ndcg": 0.0}
+{"arm": "split", "batch_done": 18, "total": 100, "batch_wall_seconds": 28.72, "cumulative_wall_seconds": 177.81, "rate_per_min": 6.07, "llmrank_ndcg": 0.0}
+{"arm": "split", "batch_done": 21, "total": 100, "batch_wall_seconds": 30.63, "cumulative_wall_seconds": 208.48, "rate_per_min": 6.04, "llmrank_ndcg": 0.0}
+{"arm": "split", "batch_done": 24, "total": 100, "batch_wall_seconds": 34.26, "cumulative_wall_seconds": 242.77, "rate_per_min": 5.93, "llmrank_ndcg": 0.0}
+{"arm": "split", "batch_done": 27, "total": 100, "batch_wall_seconds": 30.35, "cumulative_wall_seconds": 273.13, "rate_per_min": 5.93, "llmrank_ndcg": 0.0}
+{"arm": "split", "batch_done": 30, "total": 100, "batch_wall_seconds": 30.97, "cumulative_wall_seconds": 304.12, "rate_per_min": 5.92, "llmrank_ndcg": 0.020438239758848613}
+{"arm": "split", "batch_done": 33, "total": 100, "batch_wall_seconds": 30.13, "cumulative_wall_seconds": 334.27, "rate_per_min": 5.92, "llmrank_ndcg": 0.0337317331141048}
+{"arm": "split", "batch_done": 36, "total": 100, "batch_wall_seconds": 28.98, "cumulative_wall_seconds": 363.28, "rate_per_min": 5.95, "llmrank_ndcg": 0.030920755354596065}
+{"arm": "split", "batch_done": 39, "total": 100, "batch_wall_seconds": 35.79, "cumulative_wall_seconds": 399.17, "rate_per_min": 5.86, "llmrank_ndcg": 0.02854223571193483}
+{"arm": "split", "batch_done": 42, "total": 100, "batch_wall_seconds": 30.69, "cumulative_wall_seconds": 429.89, "rate_per_min": 5.86, "llmrank_ndcg": 0.02650350458965377}
+{"arm": "split", "batch_done": 45, "total": 100, "batch_wall_seconds": 36.34, "cumulative_wall_seconds": 466.44, "rate_per_min": 5.79, "llmrank_ndcg": 0.027131918828665984}
+{"arm": "split", "batch_done": 48, "total": 100, "batch_wall_seconds": 38.1, "cumulative_wall_seconds": 504.57, "rate_per_min": 5.71, "llmrank_ndcg": 0.02543617390187436}
+{"arm": "split", "batch_done": 51, "total": 100, "batch_wall_seconds": 28.83, "cumulative_wall_seconds": 533.44, "rate_per_min": 5.74, "llmrank_ndcg": 0.023939928378234693}
+{"arm": "split", "batch_done": 54, "total": 100, "batch_wall_seconds": 31.82, "cumulative_wall_seconds": 565.28, "rate_per_min": 5.73, "llmrank_ndcg": 0.022609932357221654}
+{"arm": "split", "batch_done": 57, "total": 100, "batch_wall_seconds": 30.13, "cumulative_wall_seconds": 595.43, "rate_per_min": 5.74, "llmrank_ndcg": 0.02141993591736788}
+{"arm": "split", "batch_done": 60, "total": 100, "batch_wall_seconds": 30.74, "cumulative_wall_seconds": 626.2, "rate_per_min": 5.75, "llmrank_ndcg": 0.020348939121499487}
+{"arm": "split", "batch_done": 63, "total": 100, "batch_wall_seconds": 31.12, "cumulative_wall_seconds": 657.34, "rate_per_min": 5.75, "llmrank_ndcg": 0.0193799420204757}
+{"arm": "split", "batch_done": 66, "total": 100, "batch_wall_seconds": 27.52, "cumulative_wall_seconds": 684.88, "rate_per_min": 5.78, "llmrank_ndcg": 0.018499035564999534}
+{"arm": "split", "batch_done": 69, "total": 100, "batch_wall_seconds": 30.56, "cumulative_wall_seconds": 715.47, "rate_per_min": 5.79, "llmrank_ndcg": 0.021884074979824017}
+{"arm": "split", "batch_done": 72, "total": 100, "batch_wall_seconds": 36.88, "cumulative_wall_seconds": 752.52, "rate_per_min": 5.74, "llmrank_ndcg": 0.02097223852233135}
+{"arm": "split", "batch_done": 75, "total": 100, "batch_wall_seconds": 27.29, "cumulative_wall_seconds": 779.84, "rate_per_min": 5.77, "llmrank_ndcg": 0.020133348981438096}
+{"arm": "split", "batch_done": 78, "total": 100, "batch_wall_seconds": 31.03, "cumulative_wall_seconds": 810.9, "rate_per_min": 5.77, "llmrank_ndcg": 0.019358989405228937}
+{"arm": "split", "batch_done": 81, "total": 100, "batch_wall_seconds": 38.81, "cumulative_wall_seconds": 850.47, "rate_per_min": 5.71, "llmrank_ndcg": 0.018641989797627864}
+{"arm": "split", "batch_done": 84, "total": 100, "batch_wall_seconds": 31.66, "cumulative_wall_seconds": 882.17, "rate_per_min": 5.71, "llmrank_ndcg": 0.017976204447712585}
+{"arm": "split", "batch_done": 87, "total": 100, "batch_wall_seconds": 28.05, "cumulative_wall_seconds": 910.25, "rate_per_min": 5.73, "llmrank_ndcg": 0.017356335328825943}
+{"arm": "split", "batch_done": 90, "total": 100, "batch_wall_seconds": 27.6, "cumulative_wall_seconds": 937.88, "rate_per_min": 5.76, "llmrank_ndcg": 0.01677779081786508}
+{"arm": "split", "batch_done": 93, "total": 100, "batch_wall_seconds": 30.53, "cumulative_wall_seconds": 968.44, "rate_per_min": 5.76, "llmrank_ndcg": 0.01623657175922427}
+{"arm": "split", "batch_done": 96, "total": 100, "batch_wall_seconds": 38.59, "cumulative_wall_seconds": 1007.06, "rate_per_min": 5.72, "llmrank_ndcg": 0.015729178891748512}
+{"arm": "split", "batch_done": 99, "total": 100, "batch_wall_seconds": 29.38, "cumulative_wall_seconds": 1036.49, "rate_per_min": 5.73, "llmrank_ndcg": 0.015252537107150072}
+{"arm": "split", "batch_done": 100, "total": 100, "batch_wall_seconds": 10.16, "cumulative_wall_seconds": 1046.69, "rate_per_min": 5.73, "llmrank_ndcg": 0.015100011736078571}
+{
+  "unified": {
+    "users": 100,
+    "done": 100,
+    "wall_seconds": 76.89,
+    "rate_per_min": 78.04,
+    "new_calls": 100,
+    "cache_hits": 0,
+    "raw_invalid_count": 36,
+    "parse_repair_count": 0,
+    "final_invalid_after_retry": 36,
+    "input_tokens": 533268,
+    "output_tokens": 14484,
+    "llmrank_ndcg_at_10": 0.020100011736078574,
+    "output_dir": "/Users/davidkk/llm4rec-hw2/RecSys-LLMs/outputs/hw8/fast_full/unified"
+  },
+  "split": {
+    "users": 100,
+    "done": 100,
+    "wall_seconds": 1046.85,
+    "rate_per_min": 5.73,
+    "new_calls": 100,
+    "cache_hits": 0,
+    "raw_invalid_count": 29,
+    "parse_repair_count": 1,
+    "final_invalid_after_retry": 29,
+    "input_tokens": 535968,
+    "output_tokens": 13837,
+    "llmrank_ndcg_at_10": 0.015100011736078571,
+    "output_dir": "/Users/davidkk/llm4rec-hw2/RecSys-LLMs/outputs/hw8/fast_full/split"
+  }
+}

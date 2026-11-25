@@ -1,0 +1,239 @@
+{
+  "model": "Qwen/Qwen3-1.7B",
+  "pinned_revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "users": {
+    "unified": [
+      "7F4C738BC9D4A144C518",
+      "8A30590EA4AE29504AEE",
+      "B6E50192F1453975F157"
+    ],
+    "split": [
+      "7F4C738BC9D4A144C518",
+      "8A30590EA4AE29504AEE",
+      "B6E50192F1453975F157"
+    ]
+  },
+  "checks": {
+    "same_users": true,
+    "same_evidence_hashes": true,
+    "same_candidate_hashes_and_order": true,
+    "exactly_ten_unique_eligible_outputs": true,
+    "actual_model_inference": true,
+    "identical_model_settings": true,
+    "pinned_revision_resolved": true,
+    "explicit_mps_device": true,
+    "artifacts_saved": true,
+    "invalid_fallback_tokens_runtime_recorded": true,
+    "both_runs_within_budget": true
+  },
+  "evidence_hashes": {
+    "unified": {
+      "7F4C738BC9D4A144C518": "6306289cf083f6217dfa17f7a865c06b8ee51ed0c0e2b01c2c374bd306bd1cf1",
+      "8A30590EA4AE29504AEE": "dcb3c8f330c66289d6b475b6a3c43fd846688e0e5c1e9cb484e1e72505ecaf1e",
+      "B6E50192F1453975F157": "921fcd1acbd38b4b330e37942911f8bcdafd88ea75c7ec925437410172724348"
+    },
+    "split": {
+      "7F4C738BC9D4A144C518": "6306289cf083f6217dfa17f7a865c06b8ee51ed0c0e2b01c2c374bd306bd1cf1",
+      "8A30590EA4AE29504AEE": "dcb3c8f330c66289d6b475b6a3c43fd846688e0e5c1e9cb484e1e72505ecaf1e",
+      "B6E50192F1453975F157": "921fcd1acbd38b4b330e37942911f8bcdafd88ea75c7ec925437410172724348"
+    }
+  },
+  "candidate_hashes": {
+    "unified": {
+      "7F4C738BC9D4A144C518": "890dd241c8ed90f5f46c37219356d9c1403f68cfe85dc9f6a09ec521bc603ede",
+      "8A30590EA4AE29504AEE": "dca342204e6055e891bbd24f5f8f40dce1309f3546b8a74dce52c79553291cb7",
+      "B6E50192F1453975F157": "d171a2c2f24f3731c8f346594a5fbfab33f02d49c2ad8e125e1324cb58c18cab"
+    },
+    "split": {
+      "7F4C738BC9D4A144C518": "890dd241c8ed90f5f46c37219356d9c1403f68cfe85dc9f6a09ec521bc603ede",
+      "8A30590EA4AE29504AEE": "dca342204e6055e891bbd24f5f8f40dce1309f3546b8a74dce52c79553291cb7",
+      "B6E50192F1453975F157": "d171a2c2f24f3731c8f346594a5fbfab33f02d49c2ad8e125e1324cb58c18cab"
+    }
+  },
+  "model_settings_compared": {
+    "model": {
+      "unified": "Qwen/Qwen3-1.7B",
+      "split": "Qwen/Qwen3-1.7B"
+    },
+    "requested_revision": {
+      "unified": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+      "split": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e"
+    },
+    "resolved_revision": {
+      "unified": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+      "split": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e"
+    },
+    "device": {
+      "unified": "mps",
+      "split": "mps"
+    },
+    "dtype": {
+      "unified": "torch.bfloat16",
+      "split": "torch.bfloat16"
+    },
+    "torch_version": {
+      "unified": "2.11.0",
+      "split": "2.11.0"
+    },
+    "transformers_version": {
+      "unified": "4.57.6",
+      "split": "4.57.6"
+    },
+    "tokenizer_class": {
+      "unified": "Qwen2TokenizerFast",
+      "split": "Qwen2TokenizerFast"
+    },
+    "do_sample": {
+      "unified": false,
+      "split": false
+    },
+    "thinking": {
+      "unified": false,
+      "split": false
+    },
+    "context_limit": {
+      "unified": 8192,
+      "split": 8192
+    },
+    "shuffle_seed": {
+      "unified": null,
+      "split": null
+    },
+    "history_events": {
+      "unified": 15,
+      "split": 15
+    },
+    "short_term_days": {
+      "unified": 90,
+      "split": 90
+    },
+    "temporal_boundary": {
+      "unified": "2021-03-03",
+      "split": "2021-03-03"
+    },
+    "retry_invalid": {
+      "unified": 0,
+      "split": 0
+    }
+  },
+  "generation_summary": {
+    "unified": {
+      "calls": 3,
+      "new_calls": 3,
+      "cache_hits": 0,
+      "input_tokens": 15903,
+      "output_tokens": 430,
+      "generation_seconds": 579.37,
+      "wall_seconds": 602.18,
+      "peak_child_rss_mb": 1095.0
+    },
+    "split": {
+      "calls": 3,
+      "new_calls": 3,
+      "cache_hits": 0,
+      "input_tokens": 15984,
+      "output_tokens": 797,
+      "generation_seconds": 463.4,
+      "wall_seconds": 484.71,
+      "peak_child_rss_mb": 1458.6
+    }
+  },
+  "fallback_summary": {
+    "unified": {
+      "manifest_raw_invalid_count": 1,
+      "manifest_parse_repair_count": 1,
+      "manifest_final_invalid_after_retry": 1,
+      "response_rows": 3,
+      "rows_with_fallback": 1,
+      "rows_with_parse_repaired": 1,
+      "rows_with_raw_response": 3
+    },
+    "split": {
+      "manifest_raw_invalid_count": 1,
+      "manifest_parse_repair_count": 0,
+      "manifest_final_invalid_after_retry": 1,
+      "response_rows": 3,
+      "rows_with_fallback": 1,
+      "rows_with_parse_repaired": 0,
+      "rows_with_raw_response": 3
+    }
+  },
+  "output_validity": {
+    "unified": {
+      "7F4C738BC9D4A144C518": {
+        "rank_length": 10,
+        "unique": true,
+        "eligible": true
+      },
+      "8A30590EA4AE29504AEE": {
+        "rank_length": 10,
+        "unique": true,
+        "eligible": true
+      },
+      "B6E50192F1453975F157": {
+        "rank_length": 10,
+        "unique": true,
+        "eligible": true
+      }
+    },
+    "split": {
+      "7F4C738BC9D4A144C518": {
+        "rank_length": 10,
+        "unique": true,
+        "eligible": true
+      },
+      "8A30590EA4AE29504AEE": {
+        "rank_length": 10,
+        "unique": true,
+        "eligible": true
+      },
+      "B6E50192F1453975F157": {
+        "rank_length": 10,
+        "unique": true,
+        "eligible": true
+      }
+    }
+  },
+  "artifacts": {
+    "unified": {
+      "generations.jsonl": true,
+      "generation_cache": true,
+      "final_responses.jsonl": true,
+      "ranker_responses.jsonl": true,
+      "run_manifest.json": true,
+      "metrics.json": true,
+      "per_user.json": true,
+      "predictions.csv": true,
+      "run.log": true,
+      "run_wrapper.json": true
+    },
+    "split": {
+      "generations.jsonl": true,
+      "generation_cache": true,
+      "final_responses.jsonl": true,
+      "ranker_responses.jsonl": true,
+      "run_manifest.json": true,
+      "metrics.json": true,
+      "per_user.json": true,
+      "predictions.csv": true,
+      "run.log": true,
+      "run_wrapper.json": true
+    }
+  },
+  "estimate": {
+    "basis": "measured generation seconds / 3 users, assuming linear scaling and no cache reuse",
+    "generation_seconds_per_user_by_arm": [
+      193.12,
+      154.47
+    ],
+    "mean_generation_seconds_per_user": 173.79,
+    "estimated_seconds_per_100_users_per_arm": 17379.5,
+    "estimated_hours_per_100_users_per_arm": 4.83,
+    "estimated_hours_both_arms_100_users_each": 9.66,
+    "observed_wall_seconds_by_arm": [
+      602.18,
+      484.71
+    ],
+    "caveat": "Three-user nDCG is not scientific evidence; split user 3 hit the 512-token cap."
+  }
+}

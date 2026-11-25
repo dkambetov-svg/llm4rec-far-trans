@@ -1,0 +1,44 @@
+{
+  "candidate_order_first10": {
+    "users": 6,
+    "nonempty_truth_users": 0,
+    "empty_truth_users": 6,
+    "ndcg_at_10": 0.0,
+    "ndcg_at_10_nonempty": null
+  },
+  "cbf": {
+    "users": 6,
+    "nonempty_truth_users": 0,
+    "empty_truth_users": 6,
+    "ndcg_at_10": 0.0,
+    "ndcg_at_10_nonempty": null
+  },
+  "latest_buy": {
+    "users": 6,
+    "nonempty_truth_users": 0,
+    "empty_truth_users": 6,
+    "ndcg_at_10": 0.0,
+    "ndcg_at_10_nonempty": null
+  },
+  "latest_buy_or_sell": {
+    "users": 6,
+    "nonempty_truth_users": 0,
+    "empty_truth_users": 6,
+    "ndcg_at_10": 0.0,
+    "ndcg_at_10_nonempty": null
+  },
+  "llmrank": {
+    "users": 6,
+    "nonempty_truth_users": 0,
+    "empty_truth_users": 6,
+    "ndcg_at_10": 0.0,
+    "ndcg_at_10_nonempty": null
+  },
+  "popularity": {
+    "users": 6,
+    "nonempty_truth_users": 0,
+    "empty_truth_users": 6,
+    "ndcg_at_10": 0.0,
+    "ndcg_at_10_nonempty": null
+  }
+}

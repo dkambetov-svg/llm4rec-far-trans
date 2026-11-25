@@ -1,0 +1,32 @@
+{
+  "unified": {
+    "users": 100,
+    "done": 100,
+    "wall_seconds": 76.89,
+    "rate_per_min": 78.04,
+    "new_calls": 100,
+    "cache_hits": 0,
+    "raw_invalid_count": 36,
+    "parse_repair_count": 0,
+    "final_invalid_after_retry": 36,
+    "input_tokens": 533268,
+    "output_tokens": 14484,
+    "llmrank_ndcg_at_10": 0.020100011736078574,
+    "output_dir": "/Users/davidkk/llm4rec-hw2/RecSys-LLMs/outputs/hw8/fast_full/unified"
+  },
+  "split": {
+    "users": 100,
+    "done": 100,
+    "wall_seconds": 1046.85,
+    "rate_per_min": 5.73,
+    "new_calls": 100,
+    "cache_hits": 0,
+    "raw_invalid_count": 29,
+    "parse_repair_count": 1,
+    "final_invalid_after_retry": 29,
+    "input_tokens": 535968,
+    "output_tokens": 13837,
+    "llmrank_ndcg_at_10": 0.015100011736078571,
+    "output_dir": "/Users/davidkk/llm4rec-hw2/RecSys-LLMs/outputs/hw8/fast_full/split"
+  }
+}

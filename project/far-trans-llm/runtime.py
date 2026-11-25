@@ -22,7 +22,7 @@ class LocalGenerator:
         if revision:
             kwargs['revision'] = revision
         self.tokenizer = AutoTokenizer.from_pretrained(model, **kwargs)
-        dtype = torch.bfloat16 if self.device == 'cuda' else torch.float32
+        dtype = torch.bfloat16 if self.device in ('cuda', 'mps') else torch.float32
         self.model = AutoModelForCausalLM.from_pretrained(model, torch_dtype=dtype, **kwargs)
         self.model.to(self.device).eval()
         import transformers

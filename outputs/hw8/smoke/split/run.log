@@ -1,0 +1,9 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 37.41it/s]
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+candidate_order_first10: nDCG@10=0.0000
+cbf: nDCG@10=0.0000
+latest_buy: nDCG@10=0.0000
+latest_buy_or_sell: nDCG@10=0.0000
+llmrank: nDCG@10=0.0000
+popularity: nDCG@10=0.0000

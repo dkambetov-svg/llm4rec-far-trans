@@ -1,0 +1,11 @@
+{
+  "recorded_utc": "2026-11-25T13:32:54.579371+00:00",
+  "command": "python3 starter.py run --data-dir /Users/davidkk/llm4rec-hw2/data/FAR-Trans --output-dir outputs/hw8/baseline",
+  "wall_seconds": 7.23,
+  "user_seconds": 6.28,
+  "sys_seconds": 0.52,
+  "max_rss_bytes": 624652288,
+  "peak_memory_bytes": 645777728,
+  "exit_status": 0,
+  "note": "Whole-run starter timing; not per-method timing. No LLM inference was used."
+}

@@ -1,0 +1,218 @@
+[
+  {
+    "user_id": "7F4C738BC9D4A144C518",
+    "method": "popularity",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "7F4C738BC9D4A144C518",
+    "method": "cbf",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "7F4C738BC9D4A144C518",
+    "method": "latest_buy",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "7F4C738BC9D4A144C518",
+    "method": "latest_buy_or_sell",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "7F4C738BC9D4A144C518",
+    "method": "llmrank",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "7F4C738BC9D4A144C518",
+    "method": "candidate_order_first10",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "B6E50192F1453975F157",
+    "method": "popularity",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "B6E50192F1453975F157",
+    "method": "cbf",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "B6E50192F1453975F157",
+    "method": "latest_buy",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "B6E50192F1453975F157",
+    "method": "latest_buy_or_sell",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "B6E50192F1453975F157",
+    "method": "llmrank",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "B6E50192F1453975F157",
+    "method": "candidate_order_first10",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "8A30590EA4AE29504AEE",
+    "method": "popularity",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "8A30590EA4AE29504AEE",
+    "method": "cbf",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "8A30590EA4AE29504AEE",
+    "method": "latest_buy",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "8A30590EA4AE29504AEE",
+    "method": "latest_buy_or_sell",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "8A30590EA4AE29504AEE",
+    "method": "llmrank",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "8A30590EA4AE29504AEE",
+    "method": "candidate_order_first10",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "F92A51D29569DCB1C868",
+    "method": "popularity",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "F92A51D29569DCB1C868",
+    "method": "cbf",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "F92A51D29569DCB1C868",
+    "method": "latest_buy",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "F92A51D29569DCB1C868",
+    "method": "latest_buy_or_sell",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "F92A51D29569DCB1C868",
+    "method": "llmrank",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "F92A51D29569DCB1C868",
+    "method": "candidate_order_first10",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "8DD4DC4C90951E67598E",
+    "method": "popularity",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "8DD4DC4C90951E67598E",
+    "method": "cbf",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "8DD4DC4C90951E67598E",
+    "method": "latest_buy",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "8DD4DC4C90951E67598E",
+    "method": "latest_buy_or_sell",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "8DD4DC4C90951E67598E",
+    "method": "llmrank",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "8DD4DC4C90951E67598E",
+    "method": "candidate_order_first10",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "6E7D25490A67935A1141",
+    "method": "popularity",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "6E7D25490A67935A1141",
+    "method": "cbf",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "6E7D25490A67935A1141",
+    "method": "latest_buy",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "6E7D25490A67935A1141",
+    "method": "latest_buy_or_sell",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "6E7D25490A67935A1141",
+    "method": "llmrank",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  },
+  {
+    "user_id": "6E7D25490A67935A1141",
+    "method": "candidate_order_first10",
+    "relevant_count": 0,
+    "ndcg_at_10": 0.0
+  }
+]

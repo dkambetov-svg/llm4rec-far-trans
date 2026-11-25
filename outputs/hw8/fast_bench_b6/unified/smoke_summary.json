@@ -1,0 +1,15 @@
+{
+  "users": 6,
+  "done": 6,
+  "wall_seconds": 62.56,
+  "rate_per_min": 5.75,
+  "new_calls": 6,
+  "cache_hits": 0,
+  "raw_invalid_count": 2,
+  "parse_repair_count": 0,
+  "final_invalid_after_retry": 2,
+  "input_tokens": 30640,
+  "output_tokens": 877,
+  "llmrank_ndcg_at_10": 0.0,
+  "output_dir": "/Users/davidkk/llm4rec-hw2/RecSys-LLMs/outputs/hw8/fast_bench_b6/unified"
+}

@@ -1,0 +1,86 @@
+{
+  "teaching_settings_not_official_test": true,
+  "cutoff": "2021-06-01",
+  "end_exclusive": "2021-07-01",
+  "users": [
+    "7F4C738BC9D4A144C518",
+    "B6E50192F1453975F157",
+    "8A30590EA4AE29504AEE",
+    "F92A51D29569DCB1C868",
+    "8DD4DC4C90951E67598E",
+    "6E7D25490A67935A1141"
+  ],
+  "repeat_allowed": true,
+  "candidate_count": 50,
+  "empty_truth_policy": "zero in all-user mean; nonempty mean also reported",
+  "excluded_rows": {
+    "reconstructed_initial_position_rows": 38019
+  },
+  "data_sha256": {
+    "transactions.csv": "358871fa1311a802799df86e56c3d633513566965b01412d058e0f8fbe6cd54b",
+    "asset_information.csv": "33f9897b14087068fba53a0bc9e24a0031b096bd3ad3e977e534153f29b7a590",
+    "customer_information.csv": "c4ad52ebca90e32bf3df5eb64f362b7a3437b77d978b22627cc46927fe7064af",
+    "close_prices.csv": "6ba1fe8390b31dfb3ab4e3e824910f9e8da4684cb6074cdb82eb6422a323656d"
+  },
+  "method": "llmrank",
+  "runtime": {
+    "model": "Qwen/Qwen3-1.7B",
+    "requested_revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+    "resolved_revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+    "device": "mlx_metal",
+    "dtype": "mlx_4bit_g64",
+    "quantization": {
+      "bits": 4,
+      "group_size": 64
+    },
+    "backend": "mlx_lm.batch_generate",
+    "mlx_model_path": "/Users/davidkk/llm4rec-hw2/RecSys-LLMs/outputs/hw8/mlx_qwen3_1p7b_4bit",
+    "do_sample": false,
+    "thinking": false,
+    "context_limit": 8192,
+    "max_new_tokens": 160,
+    "cache_hits": 0,
+    "new_calls": 6,
+    "raw_invalid_count": 2,
+    "parse_repair_count": 0,
+    "shuffle_seed": null,
+    "history_events": 15,
+    "adaptation": "sequential_recency_only",
+    "history_mode": "unified",
+    "prompt_version": "ranker_prompt_v2_unified",
+    "short_term_days": 90,
+    "temporal_boundary": "2021-03-03",
+    "evidence_hashes": {
+      "7F4C738BC9D4A144C518": "6306289cf083f6217dfa17f7a865c06b8ee51ed0c0e2b01c2c374bd306bd1cf1",
+      "B6E50192F1453975F157": "921fcd1acbd38b4b330e37942911f8bcdafd88ea75c7ec925437410172724348",
+      "8A30590EA4AE29504AEE": "dcb3c8f330c66289d6b475b6a3c43fd846688e0e5c1e9cb484e1e72505ecaf1e",
+      "F92A51D29569DCB1C868": "5039d6e911abccc6efb0526761f457e4aa8ba4747b7440709edb069c4924a814",
+      "8DD4DC4C90951E67598E": "921fcd1acbd38b4b330e37942911f8bcdafd88ea75c7ec925437410172724348",
+      "6E7D25490A67935A1141": "4c8a86f39da6ae9f507bbb5b0135a168be8f47008f29537a0a45ab80e12b52b6"
+    },
+    "evidence_aggregate_sha256": "7acb2ccde8877ab0a067713f2bb1a2d100ceaac69a4315d3f1dff67ca01815ca",
+    "retry_invalid": 0,
+    "retry_attempts": 0,
+    "retry_recovered": 0,
+    "final_invalid_after_retry": 2,
+    "response_log": "final_responses.jsonl",
+    "history_log": "ranker_responses.jsonl",
+    "protocol_note": "Fast path: mlx_lm.batch_generate, 4-bit quantized local conversion from pinned HF snapshot, temp=0, thinking=False, max_new_tokens=160; truncated-array salvage before documented fallback; applied identically to both arms."
+  },
+  "failures": [
+    {
+      "user_id": "F92A51D29569DCB1C868",
+      "raw_response": "[\n  \"GRS015003007\",\n  \"GRS014003032\",\n  \"GRS014003032\",\n  \"GRS001003037\",\n  \"GRS004013009\",\n  \"GRS003003035\",\n  \"GRS070003009\",\n  \"GRS074083007\",\n  \"GRS074084005\",\n  \"GRS083003012\"\n]",
+      "parse_repaired": false,
+      "fallback": true,
+      "error": "ValueError: Duplicate ISINs"
+    },
+    {
+      "user_id": "6E7D25490A67935A1141",
+      "raw_response": "[\n  \"CH0198251305\",  // Coca-Cola Hellenic Botting Co AG (Large Cap, Beverages)\n  \"GRS003003035\",    // National Bank of Greece (Large Cap, Financial Services)\n  \"GRS074083007\",    // Titan Cement Company S.A. (CR, unknown)\n  \"GRS074084005\",    // Titan Cement Company S.A. (PR, unknown)\n  \"GRS079103008\",    // Nexans Hellas S.A. (CR, unknown)\n  \"GRS083003012\",    // F.G",
+      "parse_repaired": false,
+      "fallback": true,
+      "error": "ValueError: No JSON array found"
+    }
+  ]
+}
