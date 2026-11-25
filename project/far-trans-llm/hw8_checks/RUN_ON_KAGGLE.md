@@ -110,6 +110,15 @@ A different candidates digest on Kaggle means the candidate *order* differs from
 local prepare-only files. Mixed and split are still comparable with each other (same
 run, same seed), but record it as a deviation.
 
+**Optional version check (run it before each inference cell, especially after a session
+restart).** A restarted Kaggle session once loaded transformers 5.20.2 instead of the pin.
+This line stops the cell if the pinned version is not active; re-run step 3 if it fails:
+
+```bash
+%%bash
+python -c "import sys, transformers; print('transformers', transformers.__version__); sys.exit(0 if transformers.__version__=='4.57.6' else 1)"
+```
+
 ## 6. Inference: mixed → `outputs/hw8_mixed`
 
 **dtype:** try `--dtype auto` (bfloat16) first; switch `DTYPE=float16` in step 1 for BOTH mixed and split only if bf16 fails, rerun both into fresh output dirs, and record which dtype was used (`run_manifest.json` → `runtime.requested_dtype` and `runtime.dtype`).

@@ -1,6 +1,7 @@
 # Separating Long-Term and Short-Term Purchase History in an LLM Ranker on FAR-Trans: A Controlled Prompt-Structure Study
 
-**Student:** Ruslan Myagdeev | **Team:** Miagdeev Ruslan, Alektorov Gleb, Kambetov David | **Date:** 2026-11-24
+**Student:** Ruslan Myagdeev | **Team:** Miagdeev Ruslan, Alektorov Gleb, Kambetov David
+**Email:** rmmyagdeev@edu.hse.ru | **Date:** 2026-11-24
 **Assignment:** Personalized Ranker (Week 8)
 **GitHub repository:** https://github.com/dkambetov-svg/llm4rec-far-trans | **Experiment commit:** `e65a8a1` (e65a8a1b80dc6693971856993ccc1b8d0d4e9e8a); read-only analysis scripts added in `82c1943`
 
@@ -34,13 +35,7 @@ FAR-Trans [1] is the investment dataset of customers, transactions and assets th
 
 **Approach.** I keep the course ranker, its candidates and its validation, and change only how the past Buy history is presented in the prompt.
 
-**Pipeline.**
-1. The starter selects the cohort and the 50 CBF candidates.
-2. The prompt is built in mixed or split format.
-3. Qwen3-1.7B generates a ranking (greedy decoding, thinking off).
-4. The output is validated as a JSON list of ten unique candidate ISINs (`ranker.py:177-206`).
-5. An invalid output falls back to the CBF order (`ranker.py:268-277`).
-6. The starter computes nDCG@10.
+**Pipeline.** (1) The starter selects the cohort and the 50 CBF candidates → (2) the prompt is built in mixed or split format → (3) Qwen3-1.7B generates a ranking (greedy decoding, thinking off) → (4) the output is validated as a JSON list of ten unique candidate ISINs (`ranker.py:177-206`) → (5) an invalid output falls back to the CBF order (`ranker.py:268-277`) → (6) the starter computes nDCG@10.
 
 **New flags.**
 - `--history-format {mixed,split}` (`ranker.py:308`). Mixed is the default, and mixed prompts stay byte-identical to the original (`test_ranker.py:348`).
@@ -48,6 +43,17 @@ FAR-Trans [1] is the investment dataset of customers, transactions and assets th
 - `--short-window-days`, default 90 (`ranker.py:315`).
 - A `PYTHONHASHSEED` guard: `ranker.py` exits if the seed is unset or random, and records it in `run_manifest.json` (`ranker.py:325-328`).
 - `--dtype {auto,bfloat16,float16}` (`ranker.py:319`, `runtime.py:10,32-35`). I added it as a precaution and only used `auto`.
+
+**Prompt.** `build_prompt` (`ranker.py:160-174`) writes a fixed instruction followed by `json.dumps(payload, sort_keys=True)` of the payload from `prompt_payload` (`ranker.py:93-149`). Going from mixed to split (`last_k`) changes one instruction sentence (`ranker.py:22-30`). The rest of the instruction text is unchanged, and the payload only regroups the same history fields:
+
+```
+- Recent Buy events are chronological, with the most recent explicitly identified;
++ Purchase history is split into two labelled blocks from the same past Buy events:
++ long_term_preferences gives Buy counts per asset over the whole history before the cutoff,
++ and short_term_interest gives recent Buy events, chronological, with the most recent
++ explicitly identified;
+  repeated Buy events are retained and repeat purchases are allowed.
+```
 
 **Tools and versions.**
 - Python 3.13.16 on Kaggle (`kaggle/hw8_prep_checks/candidates_seed0.json`) and 3.10.4 locally.
@@ -67,21 +73,21 @@ FAR-Trans [1] is the investment dataset of customers, transactions and assets th
 
 ## 4 Experiments
 
-**Setup.** I use FAR-Trans [2] with the starter's 100 warm users and binary nDCG@10. Users without future purchases count as 0 in the all-user mean, and 11 users have future purchases. All runs used a Kaggle Tesla T4 and the protocol above. LLM nDCG values include the fallbacks. I did not compare runtime between methods: per-call generation times are logged in `generations.jsonl`, but I did not analyse them.
+**Setup.** I use FAR-Trans [2] with the starter's 100 warm users and binary nDCG@10. Users without future purchases count as 0 in the all-user mean, and 11 users have future purchases. All runs used a Kaggle Tesla T4 and the protocol above. The candidate policy is the same 50 fixed CBF candidates for every LLM run, and LLM nDCG values include the fallbacks. A higher purchase-prediction score does not establish investment suitability or profit; this is not investment advice.
 
-**Table 1. Results on the same 100 users (4 decimals).** Each fallback count is `runtime.raw_invalid_count` in that run's `run_manifest.json`, which equals the length of its `failures` list.
+**Table 1. Results on the same 100 users (4 decimals).** The Source column names the run folder: nDCG comes from its `metrics.json`, the fallback count from its `run_manifest.json`, and the runtime from its `generations.jsonl`. Each fallback count is `runtime.raw_invalid_count`, which equals the length of the `failures` list. *Runtime* is the LLM generation time for the whole run, excluding model load. It is the sum of `response.seconds` (timed around `model.generate`, `runtime.py:57-69`) over the 95 new calls in that run's `generations.jsonl`; no record lacks the field. The 5 cache hits per run reuse a response generated earlier in the same run, so they are not counted twice.
 
-| Method | Users | Users with future purchases | nDCG@10 all | nDCG@10 nonempty | Failed / fallback | Source |
-|---|---:|---:|---:|---:|---:|---|
-| Popularity | 100 | 11 | 0.0286 | 0.2599 | n/a | M/metrics.json |
-| CBF | 100 | 11 | 0.0201 | 0.1827 | n/a | M/metrics.json |
-| Latest buy | 100 | 11 | 0.0277 | 0.2520 | n/a | M/metrics.json |
-| Latest buy or sell | 100 | 11 | 0.0271 | 0.2464 | n/a | M/metrics.json |
-| candidate_order_first10 | 100 | 11 | 0.0201 | 0.1827 | n/a | M/metrics.json |
-| llmrank (mixed) | 100 | 11 | 0.0201 | 0.1827 | 22 | M/metrics.json, M/run_manifest.json |
-| llmrank_split (last_k) | 100 | 11 | 0.0231 | 0.2101 | 33 | S/metrics.json, S/run_manifest.json |
-| llmrank_split_window (v2) | 100 | 11 | 0.0201 | 0.1827 | 27 | W2/metrics.json, W2/run_manifest.json |
-| *Footnote: llmrank_split_window, excluded: transformers 5.20.2* | *100* | *11* | *0.0201* | *0.1827* | *27* | *W5/metrics.json, W5/run_manifest.json* |
+| Method | Users | Users with future purchases | nDCG@10 all | nDCG@10 nonempty | Runtime | Failed / fallback | Source |
+|---|---:|---:|---:|---:|---:|---:|---|
+| Popularity | 100 | 11 | 0.0286 | 0.2599 | not measured separately | n/a | M/ |
+| CBF | 100 | 11 | 0.0201 | 0.1827 | not measured separately | n/a | M/ |
+| Latest buy | 100 | 11 | 0.0277 | 0.2520 | not measured separately | n/a | M/ |
+| Latest buy or sell | 100 | 11 | 0.0271 | 0.2464 | not measured separately | n/a | M/ |
+| candidate_order_first10 | 100 | 11 | 0.0201 | 0.1827 | not measured separately | n/a | M/ |
+| llmrank (mixed) | 100 | 11 | 0.0201 | 0.1827 | 2194.4 s | 22 | M/ |
+| llmrank_split (last_k) | 100 | 11 | 0.0231 | 0.2101 | 2215.8 s | 33 | S/ |
+| llmrank_split_window (v2) | 100 | 11 | 0.0201 | 0.1827 | 2013.0 s | 27 | W2/ |
+| *Footnote, excluded: transformers 5.20.2 (llmrank_split_window)* | *100* | *11* | *0.0201* | *0.1827* | *2187.6 s* | *27* | *W5/* |
 
 The five non-LLM rows are identical in all four `metrics.json` files (`hw8_window_v2_report.py`, section 3).
 
@@ -110,13 +116,11 @@ The five non-LLM rows are identical in all four `metrics.json` files (`hw8_windo
 - **Identical candidates.** 0 users have different candidates between any two runs (`hw8_window_report.py` and `hw8_window_v2_report.py`, section 2).
 - **Baselines reproduce HW2** to 4 decimals (Table 1 vs `project/far-trans-llm/HW2_RESULTS.md`).
 - **Data integrity.** The data SHA256 is identical locally and on Kaggle (`data_sha256` in every `run_manifest.json`).
+- **protocol.json.** The baseline run's `hw8_baselines/protocol.json` matches all four run manifests (M/, S/, W2/, W5/) field by field. They agree on cutoff 2021-06-01, horizon `end_exclusive` 2021-07-01, the same 100 users in the same order, candidate count 50, and the four data SHA256 hashes. The Kaggle runs write no `protocol.json` of their own.
 - **Manifests.** I compared the run manifests: W2 differs from S only in the window settings, `adaptation`, `history_events` and the outcome counts (`hw8_window_v2_report.py`, section 1).
 - **Hand computation.** I computed nDCG@10 for user 6B1591 by hand. One relevant item at rank 9 gives DCG = 1/log2(10) = 0.3010 and IDCG = 1, so nDCG = 0.3010, which matches `S/per_user.json`. I also checked the averages. The per-user sums, 2.0100 (mixed) and 2.3110 (split), give 0.1827 and 0.2101 when divided by 11, and 0.0201 and 0.0231 when divided by 100, as in `M/` and `S/metrics.json`.
 
-**Deviations from HW2.**
-- **GPU:** Tesla T4 instead of the RTX 5070 Ti Laptop GPU.
-- **torch build:** cu130 instead of cu128 (`HW2_RESULTS.md`).
-- **Candidate digest:** `candidates_digest` is e7068ca54ca9 on Kaggle (Python 3.13.16, `kaggle/hw8_prep_checks/candidates_seed0.json`) but 68a3b833a890 locally (Python 3.10.4), because of tie order. The candidate sets are identical and the order differs for 5 of 100 users. Within my Kaggle runs the candidates are identical.
+**Deviations from HW2.** The GPU is a Tesla T4 instead of the RTX 5070 Ti Laptop GPU, and the torch build is cu130 instead of cu128 (`HW2_RESULTS.md`). `candidates_digest` is e7068ca54ca9 on Kaggle (Python 3.13.16, `kaggle/hw8_prep_checks/candidates_seed0.json`) but 68a3b833a890 locally (Python 3.10.4), because of tie order. The candidate sets are identical and the order differs for 5 of 100 users. Within my Kaggle runs the candidates are identical.
 
 ## 5 Discussion
 
@@ -133,7 +137,16 @@ outputs/hw8_prep_checks__hashseed_unset/report.json
 
 *Fix and verification.* I set `PYTHONHASHSEED=0` and added a guard in `ranker.py` that refuses to run without it (`ranker.py:325-328`). I ran the candidate digest script (`hw8_checks/hw8_candidate_stability.py`) in 8 processes: seed 0 twice, seeds 1, 2 and 3, and seed unset three times (session log). Both seed-0 processes printed the same `candidates_digest` (68a3b833a890), and every other process printed a different one. The candidate sets never changed, but the order of 16 users differed, and CBF nDCG@10 stayed 0.020100 in all 8 processes. After the fix, 0 users differ and the byte-level regrouping holds for 100/100 users (`hw8_prep_checks/report.json`, `kaggle/hw8_prep_checks/report.json`).
 
-**Failure case 2: library drift on Kaggle.** After a Kaggle session restart, the window run used transformers 5.20.2 instead of 4.57.6, the tokenizer class Qwen2Tokenizer instead of Qwen2TokenizerFast, and `resolved_revision` None (`W5/run_manifest.json`). I detected it from `run_manifest.json` and from a different model-loading log. *Fix:* I re-ran the pinned `pip install` and added a version check that stops the cell. *Verification:* the pinned v2 run matches the split manifest except for the window fields. The v2 run and the 5.20.2 run give identical raw responses, top-10 lists and valid/fallback statuses for 100/100 users (`hw8_window_v2_report.py`, section 5). So the drift had no effect here, but I report only the pinned run.
+**Failure case 2: library drift on Kaggle.** After a Kaggle session restart, the window run used transformers 5.20.2 instead of 4.57.6, the tokenizer class Qwen2Tokenizer instead of Qwen2TokenizerFast, and `resolved_revision` None:
+
+```
+outputs/kaggle/hw8_split_window/run_manifest.json
+123:    "resolved_revision": null,
+127:    "transformers_version": "5.20.2",
+128:    "tokenizer_class": "Qwen2Tokenizer",
+```
+
+I detected it from `run_manifest.json` and from a different model-loading log. *Fix:* I re-ran the pinned `pip install`, and in the Kaggle notebook cell of the v2 run I added a version check that stops the cell: `python -c "... sys.exit(0 if transformers.__version__=='4.57.6' else 1)"`. This check was not part of `RUN_ON_KAGGLE.md` at the experiment commit; the guide now lists it as an optional step before inference. *Verification:* the pinned v2 run matches the split manifest except for the window fields. The v2 run and the 5.20.2 run give identical raw responses, top-10 lists and valid/fallback statuses for 100/100 users (`hw8_window_v2_report.py`, section 5). So the drift had no effect here, but I report only the pinned run.
 
 **IMPROVE (one variable: the short-term block is a 90-day window instead of the last 15 events).** My hypothesis before the run: "A time window should reflect short-term interest better than a fixed last-15 events, but for active users the prompt becomes longer, so invalid outputs may increase." The result supported neither part. The window block was empty for 44 of 100 users and shorter than `last_k` for 76 (median 1.0 events vs 2.5, maximum 23 vs 15; counted in `W2/` and `S/generations.jsonl`). So it gave the model less recent information, not more. Invalid outputs fell to 27, from 33 (`W2/` and `S/run_manifest.json`). nDCG@10 returned to 0.0201 because 6B1591 lost its hit (Table 2).
 
@@ -148,16 +161,11 @@ outputs/hw8_prep_checks__hashseed_unset/report.json
 - A 90-day window is empty for almost half of the warm users (44 of 100), so recent activity in this sample is sparse.
 - **Limitation.** `json.dumps(..., sort_keys=True)` (`ranker.py:174`) moves the history after `candidate_assets` in split, so its position in the prompt also changes (`hw8_prep_checks/report.json`, field `top_level_key_order`). I documented this instead of fixing it.
 
-**Next improvement.** Reduce invalid outputs before testing prompt structure again:
-- On an invalid response, send one retry that includes the validation error, identically for mixed and split.
-- Keep the history before the candidates in both formats.
-- Then rerun the same comparison.
-
-With 8 of the 11 users with future purchases falling back, no prompt change can be measured reliably now.
+**Next improvement.** Reduce invalid outputs before testing prompt structure again. On an invalid response, I would send one retry that includes the validation error, identically for mixed and split, and keep the history before the candidates in both formats; then I would rerun the same comparison. With 8 of the 11 users with future purchases falling back, no prompt change can be measured reliably now.
 
 ### Team Discussion and Individual Contribution
 
-**Team discussion and decisions.** Our team (Ruslan Miagdeev, Gleb Alektorov, David Kambetov) works on the same question about separating long-term and short-term purchase history on FAR-Trans. We decided that each member implements and evaluates their own variant of the temporal separation on a personal branch of the shared repository https://github.com/dkambetov-svg/llm4rec-far-trans. Each of us uses the course starter, the same 100-user protocol and the four provided baselines. Gleb's Week 8 experiment has already been merged into main (pull request #1). The team main branch also contains a retry-on-invalid ranker from HW2, which matches my next improvement. Unresolved questions:
+**Team discussion and decisions.** Our team (Ruslan Miagdeev, Gleb Alektorov, David Kambetov) works on the same question about separating long-term and short-term purchase history on FAR-Trans. We decided that each member implements and evaluates their own variant of the temporal separation on a personal branch of the shared repository https://github.com/dkambetov-svg/llm4rec-far-trans. Each of us uses the course starter, the same 100-user protocol and the four provided baselines. Gleb's Week 8 experiment has already been merged into main (pull request #1). The team main branch also contains a retry-on-invalid ranker from HW2, which matches my next improvement. I checked both with a read-only `git fetch` of team main: merge commit `71824eb` and commit `fe7470a`. Unresolved questions:
 - Which variant to carry into the final project.
 - Whether to adopt retry-on-invalid as the common ranker, so that fallbacks do not dominate the comparison.
 - How to fix the candidate order across machines (`PYTHONHASHSEED`), so that our results can be compared directly.
