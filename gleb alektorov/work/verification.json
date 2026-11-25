@@ -1,0 +1,26 @@
+{
+  "protocol": "50efd4aeb415ba6f0c66dd0793a7c2033cdc32a42b86b58eebbca3e81eaf3417",
+  "users": 100,
+  "nonempty": 11,
+  "gain": 1,
+  "loss": 0,
+  "tie": 99,
+  "both_periods": 35,
+  "changed": 100,
+  "example": {
+    "index": 30,
+    "arm": "flat",
+    "truth_count": 2,
+    "hit_ranks": [
+      7
+    ],
+    "dcg": 0.3333333333333333,
+    "idcg": 1.6309297535714575,
+    "score": 0.20438239758848611
+  },
+  "invalid": {
+    "flat": 0,
+    "split": 0
+  },
+  "context_max": 2180
+}
