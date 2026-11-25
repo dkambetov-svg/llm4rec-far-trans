@@ -1,10 +1,13 @@
 """CPU-only contract tests with fake generators; these are not model experiments."""
 from collections import Counter
+import contextlib
 import copy
 import csv
 import hashlib
 import importlib.util
+import io
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -236,6 +239,39 @@ class ExecutionTests(unittest.TestCase):
         self.assertIn('--history-events', result.stdout)
         self.assertIn('--history-format', result.stdout)
         self.assertIn('--short-window-days', result.stdout)
+
+    MAIN_ARGV = ['--data-dir', 'unused', '--output-dir', 'unused', '--model', 'unused']
+
+    def test_main_refuses_unfixed_hash_seed(self):
+        for value in (None, '', 'random'):
+            with self.subTest(value=value), patch.dict(os.environ), \
+                    patch.object(ranker.data_adapter, 'load') as load, \
+                    patch.object(ranker, 'run') as run, \
+                    contextlib.redirect_stderr(io.StringIO()) as stderr:
+                os.environ.pop('PYTHONHASHSEED', None)
+                if value is not None:
+                    os.environ['PYTHONHASHSEED'] = value
+                with self.assertRaises(SystemExit) as raised:
+                    ranker.main(self.MAIN_ARGV)
+                self.assertEqual(raised.exception.code, 2)
+                self.assertIn('PYTHONHASHSEED', stderr.getvalue())
+                load.assert_not_called()
+                run.assert_not_called()
+
+    def test_main_passes_fixed_hash_seed_to_manifest_metadata(self):
+        with patch.dict(os.environ, {'PYTHONHASHSEED': '0'}), \
+                patch.object(ranker.data_adapter, 'load') as load, \
+                patch.object(ranker, 'run') as run:
+            ranker.main(self.MAIN_ARGV)
+        self.assertEqual(run.call_args.args[0].python_hash_seed, '0')
+        load.assert_called_once()
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(ranker.data_adapter, 'save_results') as save:
+            args = self.args(directory)
+            args.python_hash_seed = '0'
+            metadata = ranker.run(args, self.bundle(), FakeGenerator(json.dumps(IDS[:10])))
+        self.assertEqual(metadata['python_hash_seed'], '0')
+        self.assertEqual(save.call_args.args[5]['python_hash_seed'], '0')
 
 
 # Mixed-format fixtures and SHA256 of prompts produced by ranker.py at commit

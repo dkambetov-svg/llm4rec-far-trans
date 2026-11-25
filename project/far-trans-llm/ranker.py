@@ -5,6 +5,7 @@ from collections import Counter
 from datetime import date, timedelta
 import hashlib
 import json
+import os
 import re
 
 import data_adapter
@@ -284,6 +285,7 @@ def run(args, bundle, generator=None):
     metadata = dict(generator.metadata, raw_invalid_count=invalid_count,
                     parse_repair_count=repair_count, shuffle_seed=args.shuffle_seed,
                     history_events=args.history_events, adaptation='sequential_recency_only',
+                    python_hash_seed=getattr(args, 'python_hash_seed', None),
                     response_log='final_responses.jsonl',
                     history_log='ranker_responses.jsonl')
     if split:
@@ -310,6 +312,14 @@ def main(argv=None):
                         help='Split window mode only: days before the cutoff in short_term_interest')
     parser.add_argument('--prepare-only', action='store_true', help='Write prompts only; no inference or measured results')
     args = parser.parse_args(argv)
+    # The starter's CBF candidate order depends on Python string hashing (set iteration
+    # order changes float summation), so an unfixed seed can change candidates per process.
+    seed = os.environ.get('PYTHONHASHSEED')
+    if seed in (None, '', 'random'):
+        parser.exit(2, f'{parser.prog}: error: PYTHONHASHSEED must be set to a fixed integer '
+                       'before Python starts (e.g. PYTHONHASHSEED=0 python ranker.py ...); '
+                       'otherwise the starter\'s CBF candidate order can differ between runs.\n')
+    args.python_hash_seed = seed
     run(args, data_adapter.load(args))
 
 
