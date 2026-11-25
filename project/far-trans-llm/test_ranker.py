@@ -1,5 +1,6 @@
 """CPU-only contract tests with fake generators; these are not model experiments."""
 import copy
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -149,7 +150,9 @@ class ExecutionTests(unittest.TestCase):
     def args(self, directory, **kwargs):
         return SimpleNamespace(output_dir=Path(directory), history_events=15,
                                shuffle_seed=42, prepare_only=kwargs.get('prepare_only', False),
-                               on_invalid=kwargs.get('on_invalid', 'error'))
+                               on_invalid=kwargs.get('on_invalid', 'error'),
+                               history_format=kwargs.get('history_format', 'mixed'),
+                               short_window_days=kwargs.get('short_window_days', 90))
 
     def test_fake_success_coverage_baselines_no_mutation(self):
         bundle = self.bundle()
@@ -227,6 +230,142 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('--prepare-only', result.stdout)
         self.assertIn('--history-events', result.stdout)
+        self.assertIn('--history-format', result.stdout)
+        self.assertIn('--short-window-days', result.stdout)
+
+
+# Mixed-format fixtures and SHA256 of prompts produced by ranker.py at commit
+# 799e54c, before --history-format existed. Any byte change to the default prompt fails.
+GOLDEN_EVENTS = [('2021-05-20', IDS[1], 'Buy'), ('2021-01-01', IDS[0], 'Buy'),
+                 ('2021-05-20', IDS[0], 'Buy'), ('2021-05-31', IDS[2], 'Sell'),
+                 ('2021-06-01', IDS[3], 'Buy'), ('2020-11-02', IDS[4], 'Buy')]
+GOLDEN_HISTORY = {IDS[0]: 2, IDS[1]: 1, IDS[4]: 1}
+GOLDEN_MIXED_SHA256 = {
+    'empty': '2199aa5084350d84a0c2f0d9e132e7dd98fb4aa2cf7be0258b06feff19d05c19',
+    'events': 'abcbec612192c08870cb5daef03ac3735c4a3b9ebcc0f6842bdd3a6bad26bb49',
+    'events_shuffle42_h2': 'eb5e9a99337543021b36eb6099309eb673fb5fa49073f12980a142c33a7ce817',
+}
+
+
+def prompt_json(prompt):
+    return json.loads(prompt.split('\n', 1)[1])
+
+
+class HistoryFormatTests(unittest.TestCase):
+    def setUp(self):
+        self.assets, self.context = fixture()
+
+    def golden_prompts(self, **kwargs):
+        c, a = self.context, self.assets
+        return {
+            'empty': ranker.build_prompt(c, a, {}, (), **kwargs),
+            'events': ranker.build_prompt(c, a, GOLDEN_HISTORY, GOLDEN_EVENTS, **kwargs),
+            'events_shuffle42_h2': ranker.build_prompt(c, a, GOLDEN_HISTORY, GOLDEN_EVENTS,
+                                                       2, 42, **kwargs),
+        }
+
+    # (a) The default/mixed prompt is byte-identical to the pre-change prompt.
+    def test_mixed_prompt_unchanged_byte_for_byte(self):
+        for kwargs in ({}, {'history_format': 'mixed'},
+                       {'history_format': 'mixed', 'short_window_days': 7}):
+            for name, prompt in self.golden_prompts(**kwargs).items():
+                with self.subTest(kwargs=kwargs, fixture=name):
+                    digest = hashlib.sha256(prompt.encode('utf-8')).hexdigest()
+                    self.assertEqual(digest, GOLDEN_MIXED_SHA256[name])
+
+    def test_mixed_prepare_only_records_unchanged(self):
+        bundle = ExecutionTests().bundle()
+        with tempfile.TemporaryDirectory() as directory:
+            ranker.run(ExecutionTests().args(directory, prepare_only=True), bundle)
+            records = [json.loads(line) for line in
+                       (Path(directory) / 'ranker_prompts.jsonl').read_text(encoding='utf-8').splitlines()]
+        self.assertEqual([set(r) for r in records], [{'user_id', 'prompt', 'stage'}] * 2)
+
+    # (b) Split uses only Buy events dated strictly before the cutoff.
+    def test_split_uses_only_pre_cutoff_buys(self):
+        self.assets[IDS[11]].update(timestamp='2021-07-01', assetName='FUTURE_ASSET')
+        events = [
+            ('2019-03-04', IDS[0], 'Buy'),   # long-term only
+            ('2021-03-03', IDS[1], 'Buy'),   # cutoff - 90 days: inside window
+            ('2021-03-02', IDS[2], 'Buy'),   # cutoff - 91 days: long-term only
+            ('2021-05-31', IDS[0], 'Buy'),   # last pre-cutoff day
+            ('2021-05-31', IDS[3], 'Sell'),  # not a Buy
+            ('2021-06-01', IDS[4], 'Buy'),   # on cutoff: excluded
+            ('2021-06-15', IDS[5], 'Buy'),   # after cutoff: excluded
+            ('2021-05-01', 'NOT_ELIGIBLE', 'Buy'),  # outside asset universe
+            ('2021-05-10', IDS[11], 'Buy'),  # eligible but metadata from the future
+        ]
+        p = ranker.prompt_payload(self.context, self.assets, {}, list(reversed(events)),
+                                  history_format='split', short_window_days=90)
+        long_term = {r['ISIN']: r['buy_count'] for r in p['long_term_preferences']['buy_counts']}
+        self.assertEqual(long_term, {IDS[0]: 2, IDS[1]: 1, IDS[2]: 1, IDS[11]: 1})
+        short = p['short_term_interest']
+        self.assertEqual(short['window_start_inclusive'], '2021-03-03')
+        self.assertEqual(short['window_end_exclusive'], '2021-06-01')
+        self.assertEqual(short['buy_events_oldest_to_newest'],
+                         [{'date': '2021-03-03', 'ISIN': IDS[1]},
+                          {'date': '2021-05-10', 'ISIN': IDS[11]},
+                          {'date': '2021-05-31', 'ISIN': IDS[0]}])
+        blocks = json.dumps([p['long_term_preferences'], short])
+        for leaked in (IDS[3], IDS[4], IDS[5], 'NOT_ELIGIBLE', 'FUTURE', '2021-06-15'):
+            self.assertNotIn(leaked, blocks)
+        for date_ in [e['date'] for e in short['buy_events_oldest_to_newest']]:
+            self.assertLess(date_, self.context['cutoff'])
+        self.assertNotIn('recent_buy_events_oldest_to_newest', p)
+        self.assertNotIn('buy_history_counts', p)
+
+    def test_split_long_term_equals_pre_cutoff_buy_counts(self):
+        p = ranker.prompt_payload(self.context, self.assets, GOLDEN_HISTORY, GOLDEN_EVENTS,
+                                  history_format='split')
+        counts = {r['ISIN']: r['buy_count'] for r in p['long_term_preferences']['buy_counts']}
+        self.assertEqual(counts, GOLDEN_HISTORY)
+
+    def test_split_prompt_instruction_and_window_validation(self):
+        prompt = ranker.build_prompt(self.context, self.assets, {}, GOLDEN_EVENTS,
+                                     history_format='split', short_window_days=30)
+        self.assertIn('last 30 days before the cutoff', prompt)
+        self.assertNotIn('most recent explicitly identified', prompt)
+        with self.assertRaises(ValueError):
+            ranker.prompt_payload(self.context, self.assets, {}, (), history_format='split',
+                                  short_window_days=0)
+        with self.assertRaises(ValueError):
+            ranker.prompt_payload(self.context, self.assets, {}, (), history_format='other')
+
+    # (c) Candidate list (membership and presentation order) is identical in both formats.
+    def test_candidate_list_identical_across_formats(self):
+        for seed in (None, 42):
+            with self.subTest(shuffle_seed=seed):
+                mixed = ranker.build_prompt(self.context, self.assets, GOLDEN_HISTORY,
+                                            GOLDEN_EVENTS, shuffle_seed=seed)
+                split = ranker.build_prompt(self.context, self.assets, GOLDEN_HISTORY,
+                                            GOLDEN_EVENTS, shuffle_seed=seed,
+                                            history_format='split')
+                self.assertEqual(prompt_json(mixed)['candidate_assets'],
+                                 prompt_json(split)['candidate_assets'])
+
+    def test_split_run_method_name_and_same_candidates(self):
+        bundle = ExecutionTests().bundle()
+        outputs = {}
+        for history_format in ('mixed', 'split'):
+            fake = FakeGenerator(json.dumps(list(reversed(IDS[:10]))))
+            with tempfile.TemporaryDirectory() as directory, \
+                    patch.object(ranker.data_adapter, 'save_results') as save:
+                metadata = ranker.run(ExecutionTests().args(directory, history_format=history_format),
+                                      bundle, fake)
+                outputs[history_format] = (save.call_args.args[2], save.call_args.args[4],
+                                           metadata, fake.prompts)
+        mixed, split = outputs['mixed'], outputs['split']
+        self.assertEqual(mixed[1], 'llmrank')
+        self.assertEqual(split[1], 'llmrank_split')
+        self.assertEqual(set(split[0]['u']), {'llmrank_split', 'candidate_order_first10'})
+        for uid in ('u', 'v'):
+            self.assertEqual(mixed[0][uid]['candidate_order_first10'],
+                             split[0][uid]['candidate_order_first10'])
+        self.assertEqual([prompt_json(p)['candidate_assets'] for p in mixed[3]],
+                         [prompt_json(p)['candidate_assets'] for p in split[3]])
+        self.assertEqual(split[2]['history_format'], 'split')
+        self.assertEqual(split[2]['short_window_days'], 90)
+        self.assertNotIn('history_format', mixed[2])
 
 
 if __name__ == '__main__':
